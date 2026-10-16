@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>MobileWheel.Win</RootNamespace>
+    <AssemblyName>mobileWheel_win</AssemblyName>
+    <!-- 程序图标：与界面里「模拟方向盘」前的手柄图标同一份路径数据 -->
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.22" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Nefarius.ViGEm.Client" Version="1.21.256" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 内置 ViGEmBus 官方安装包（BSD-3-Clause，随包附 LICENSE）：
+         缺驱动时由 ViGEmBusInstaller 释放到临时目录并提权静默安装，目标机不用联网 -->
+    <EmbeddedResource Include="Assets\ViGEmBus_1.22.0_x64_x86_arm64.exe"
+                      LogicalName="MobileWheel.Win.ViGEmBusSetup.exe" />
+    <!-- 再分发要求：LICENSE 跟着程序一起发出去（放 exe 旁边，别塞进 Assets 子目录） -->
+    <None Update="Assets\ViGEmBus-LICENSE.txt" CopyToOutputDirectory="PreserveNewest"
+          TargetPath="ViGEmBus-LICENSE.txt" />
+  </ItemGroup>
+
+</Project>

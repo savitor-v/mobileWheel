@@ -1,0 +1,205 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:MobileWheel.Win.ViewModels"
+        xmlns:models="clr-namespace:MobileWheel.Win.Models"
+        xmlns:controls="clr-namespace:MobileWheel.Win.Controls"
+        x:Class="MobileWheel.Win.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="mobileWheel · Windows 水平仪"
+        Width="1160" Height="880" MinWidth="980" MinHeight="680"
+        Background="#0F172A">
+
+  <Window.Styles>
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="#1E293B" />
+      <Setter Property="BorderBrush" Value="#334155" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="12" />
+    </Style>
+    <Style Selector="TextBlock.section">
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="#E2E8F0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.field">
+      <Setter Property="Foreground" Value="#94A3B8" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+  </Window.Styles>
+
+  <Grid Margin="12" RowDefinitions="Auto,*,240" ColumnDefinitions="300,*">
+
+    <!-- 连接状态 -->
+    <Border Grid.Row="0" Grid.ColumnSpan="2" Classes="card" Margin="0,0,0,12">
+      <DockPanel>
+        <Ellipse Width="10" Height="10" Fill="{Binding StatusBrush}"
+                 VerticalAlignment="Center" Margin="0,0,8,0" />
+        <TextBlock DockPanel.Dock="Right" Classes="field" VerticalAlignment="Center"
+                   Text="{Binding ReadingCountText}" />
+        <TextBlock Text="{Binding StatusText}" FontWeight="SemiBold" VerticalAlignment="Center" />
+      </DockPanel>
+    </Border>
+
+    <!-- 左侧：局域网连接（手机是服务端） -->
+    <Border Grid.Row="1" Grid.Column="0" Classes="card" Margin="0,0,12,12">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="8">
+          <TextBlock Text="局域网连接（手机为服务端）" Classes="section" />
+          <TextBox Watermark="手机 IP，例如 192.168.1.100（端口固定 11223）"
+                   Text="{Binding ServerIp}" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="连接" Padding="16,4" Command="{Binding ConnectCommand}" />
+            <Button Content="断开" Padding="16,4" Command="{Binding DisconnectCommand}" />
+          </StackPanel>
+          <CheckBox Content="断线后自动重连" IsChecked="{Binding AutoReconnect}" />
+          <TextBlock Classes="field" TextWrapping="Wrap"
+                     Text="手机上点「开始监测」与「开启局域网」，端口固定 11223。手机端已开启后台保活，切到后台或熄屏都会继续发送。" />
+
+          <Separator Background="#334155" Height="1" />
+
+          <!-- 扫描局域网：并发探测本机网段里开放 11223 端口的主机 -->
+          <DockPanel>
+            <Button DockPanel.Dock="Right" Content="扫描设备" Padding="12,4"
+                    Command="{Binding ScanCommand}" />
+            <TextBlock Classes="field" Text="{Binding ScanSummary}" VerticalAlignment="Center" />
+          </DockPanel>
+          <ListBox ItemsSource="{Binding ScanDevices}" SelectedItem="{Binding SelectedDevice}"
+                   MaxHeight="92" Padding="2" Background="#0F172A"
+                   BorderBrush="#334155" BorderThickness="1" CornerRadius="6">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="models:LanDevice">
+                <TextBlock Text="{Binding DisplayText}" FontSize="12" Foreground="#CBD5E1" />
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <Button Content="连接选中设备" Padding="12,4" HorizontalAlignment="Left"
+                  Command="{Binding ConnectSelectedDeviceCommand}" />
+
+          <Separator Background="#334155" Height="1" />
+
+          <CheckBox IsChecked="{Binding GamepadEnabled}" VerticalContentAlignment="Center"
+                    AutomationProperties.Name="模拟方向盘（虚拟 Xbox 360 手柄）">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <!-- 手柄图标：提示勾选后系统里会多出一个虚拟手柄 -->
+              <Panel Width="18" Height="18" VerticalAlignment="Center">
+                <Path Stretch="Uniform" Fill="#E2E8F0"
+                      Data="M7,8 H17 C20,8 22,11 22,14 C22,17 19,18 17,16 L15,14 H9 L7,16 C5,18 2,17 2,14 C2,11 4,8 7,8 Z" />
+                <Path Stretch="Uniform" Fill="#1E293B"
+                      Data="M6.75,9.75 h1.5 v1.5 h1.5 v1.5 h-1.5 v1.5 h-1.5 v-1.5 h-1.5 v-1.5 h1.5 z M16.5,9.5 a1,1 0 1 0 0,2 a1,1 0 1 0 0,-2 z M14.7,11.3 a1,1 0 1 0 0,2 a1,1 0 1 0 0,-2 z" />
+              </Panel>
+              <TextBlock Text="模拟方向盘（虚拟 Xbox 360 手柄）" VerticalAlignment="Center" />
+            </StackPanel>
+          </CheckBox>
+          <TextBlock Classes="field" TextWrapping="Wrap" Text="{Binding GamepadStatus}" />
+
+          <!-- 内置 ViGEmBus 官方安装包：缺驱动时释放到临时目录并提权静默安装，目标机不用联网 -->
+          <Button Content="安装虚拟手柄驱动" Padding="12,4" HorizontalAlignment="Stretch"
+                  AutomationProperties.Name="安装虚拟手柄驱动"
+                  Command="{Binding InstallDriverCommand}" />
+          <TextBlock Classes="field" TextWrapping="Wrap" Text="{Binding ViGEmBusStatus}" />
+
+          <TextBlock Classes="field" TextWrapping="Wrap"
+                     Text="勾选后会多出一个 Xbox 360 手柄：左摇杆 X 轴跟随手机倾角（可用角度 0°~60°，60° 为满舵），勾选时还会弹出一个置顶小窗实时显示方向盘与 LT / RT 模拟量。游戏里把转向轴绑到「左摇杆 X / Left Stick X」即可。驱动用上面的按钮装，内置官方安装包，目标机不用联网，但会弹一次 UAC 提权。" />
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+
+    <!-- 水平仪：固定地平线 + 随倾角旋转的指针，左右各一条竖向扳机模拟量 -->
+    <Border Grid.Row="1" Grid.Column="1" Classes="card" Margin="0,0,0,12">
+      <Grid RowDefinitions="Auto,*">
+        <TextBlock Text="水平仪（固地平线 · 指针随倾角转动）" Classes="section" />
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+          <Grid ColumnDefinitions="Auto,18,Auto,18,Auto">
+
+            <!-- 左：LT 模拟量竖条（顶部为满值，与手机端滑动条一致） -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <StackPanel VerticalAlignment="Center" Spacing="2">
+                <TextBlock Text="LT" Classes="field" />
+                <TextBlock Text="{Binding LeftTriggerText}" FontSize="12" />
+              </StackPanel>
+              <Panel Width="20" Height="300">
+                <ProgressBar Width="300" Height="20" Minimum="0" Maximum="255"
+                             Value="{Binding LeftTriggerValue}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center"
+                             Foreground="#22D3EE" Background="#0F172A">
+                  <ProgressBar.RenderTransform>
+                    <RotateTransform Angle="-90" />
+                  </ProgressBar.RenderTransform>
+                </ProgressBar>
+              </Panel>
+            </StackPanel>
+
+            <controls:LevelGauge Grid.Column="2" Width="300" Height="300" HorizontalAlignment="Center"
+                                 Angle="{Binding Angle}" />
+
+            <!-- 右：RT 模拟量竖条 -->
+            <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Panel Width="20" Height="300">
+                <ProgressBar Width="300" Height="20" Minimum="0" Maximum="255"
+                             Value="{Binding RightTriggerValue}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center"
+                             Foreground="#F59E0B" Background="#0F172A">
+                  <ProgressBar.RenderTransform>
+                    <RotateTransform Angle="-90" />
+                  </ProgressBar.RenderTransform>
+                </ProgressBar>
+              </Panel>
+              <StackPanel VerticalAlignment="Center" Spacing="2">
+                <TextBlock Text="RT" Classes="field" />
+                <TextBlock Text="{Binding RightTriggerText}" FontSize="12" />
+              </StackPanel>
+            </StackPanel>
+          </Grid>
+          <!-- 与上面的水平仪多留一点间距，别让大号角度数字贴住表盘 -->
+          <TextBlock Text="{Binding AngleText}" FontSize="46" FontWeight="Bold" Margin="0,16,0,0"
+                     Foreground="{Binding DirectionBrush}" HorizontalAlignment="Center" />
+          <TextBlock Text="{Binding Direction}" FontSize="18"
+                     Foreground="{Binding DirectionBrush}" HorizontalAlignment="Center" />
+          <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto"
+                ColumnSpacing="18" RowSpacing="4" HorizontalAlignment="Center" Margin="0,6,0,0">
+            <TextBlock Text="屏幕方向" Classes="field" />
+            <TextBlock Grid.Column="1" Text="{Binding RotationText}" FontSize="12" />
+            <TextBlock Grid.Row="1" Text="最近更新" Classes="field" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding UpdatedAtText}" FontSize="12" />
+          </Grid>
+
+          <!-- 手机顶部两个按键（左 X、右 A）的实时状态：按下时指示灯点亮 -->
+          <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+            <Border Background="#0F172A" BorderBrush="#334155" BorderThickness="1"
+                    CornerRadius="6" Padding="14,3" MinWidth="46">
+              <TextBlock Text="X" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"
+                         Foreground="{Binding ButtonXBrush}" />
+            </Border>
+            <Border Background="#0F172A" BorderBrush="#334155" BorderThickness="1"
+                    CornerRadius="6" Padding="14,3" MinWidth="46">
+              <TextBlock Text="A" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"
+                         Foreground="{Binding ButtonABrush}" />
+            </Border>
+          </StackPanel>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- 数据日志 -->
+    <Border Grid.Row="2" Grid.ColumnSpan="2" Classes="card">
+      <Grid RowDefinitions="Auto,*">
+        <DockPanel>
+          <Button DockPanel.Dock="Right" Padding="12,4" Content="清空日志"
+                  Command="{Binding ClearLogCommand}" />
+          <TextBlock Text="{Binding LogHeader}" Classes="section" />
+        </DockPanel>
+        <ScrollViewer Grid.Row="1" Margin="0,8,0,0">
+          <ItemsControl ItemsSource="{Binding LogEntries}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="12" Foreground="#CBD5E1" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </Grid>
+    </Border>
+
+  </Grid>
+</Window>

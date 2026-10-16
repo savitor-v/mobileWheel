@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/background_light">
+
+    <!-- 屏幕最上方整条：左上角是传感器状态、右上角是本机 IP 与局域网，
+         中间是模拟手柄的 X 键（中线偏左）与 A 键（中线偏右） -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- 左上角：传感器状态 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="传感器状态:"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSensorStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:maxLines="1"
+                android:text="未连接"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- 中间：X 键（152dp × 112dp：横向已是原来的两倍，纵向再翻一倍） -->
+        <Button
+            android:id="@+id/btnX"
+            android:layout_width="152dp"
+            android:layout_height="112dp"
+            android:backgroundTint="@android:color/darker_gray"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:padding="0dp"
+            android:text="X"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <!-- 两键之间的间隔：这个值越大，两键越往两侧推。
+             两侧文字块是等权重，间隔每加 2px，两块各少 1px 可用宽度；
+             右块现在只要 360px（四行显示），左块「传感器状态: 已连接」要 413px，
+             所以间隔上限约 170dp，这里取 160dp 留一点余量 -->
+        <Space
+            android:layout_width="160dp"
+            android:layout_height="1dp" />
+
+        <!-- 中间：A 键 -->
+        <Button
+            android:id="@+id/btnA"
+            android:layout_width="152dp"
+            android:layout_height="112dp"
+            android:backgroundTint="@android:color/darker_gray"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:padding="0dp"
+            android:text="A"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <!-- 右上角：本机 IP + 局域网连接状态，改成四行显示（标签一行、值一行）。
+             这样最宽的一行只剩 IP 本身（约 360px），比原来「标签+值同一行」的
+             551px 窄了近 190px，省下来的宽度留给中间两键往两侧推 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="本机 IP:"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvLocalIp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="--"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:maxLines="1"
+                android:text="局域网:"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvLanStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="未连接"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 下方三列：LT | 水平仪 | RT（两侧的监测 / 局域网开关已去掉，打开软件即全开） -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- 左内侧：LT 扳机（竖向滑动条，顶部为满值）
+             列宽 = 滑动条视图宽度，也就是可触摸命中的横向范围；
+             再补一条 marginStart 让整列（连同命中区）向中间靠拢 -->
+        <LinearLayout
+            android:layout_width="168dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="88dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- 上下各留一份空白，让滑块只占可滑动区域的 2/3 并保持竖直居中 -->
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LT"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
+
+            <com.savitor.mobilewheel.TriggerPadView
+                android:id="@+id/padLt"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="4"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvLtValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="40dp"
+                android:gravity="center"
+                android:text="0"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <!-- 中间：水平仪（标题与手柄图标已去掉，只留表盘；状态信息在顶部整条的两端） -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:orientation="vertical">
+
+            <!-- 用 FrameLayout 兜住，让表盘保持方形并居中 -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <com.savitor.mobilewheel.LevelView
+                    android:id="@+id/levelView"
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- 右内侧：RT 扳机（竖向滑动条，顶部为满值）
+             同样用 marginEnd 让整列向中间靠拢 -->
+        <LinearLayout
+            android:layout_width="168dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="88dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- 上下各留一份空白，让滑块只占可滑动区域的 2/3 并保持竖直居中 -->
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RT"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
+
+            <com.savitor.mobilewheel.TriggerPadView
+                android:id="@+id/padRt"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="4"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvRtValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="40dp"
+                android:gravity="center"
+                android:text="0"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

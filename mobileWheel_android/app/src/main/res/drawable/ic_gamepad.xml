@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 手柄图标：机身 + 十字方向键 + 两个按键（按键用背景色挖空） -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <path
+        android:fillColor="#FF334155"
+        android:pathData="M7,8 H17 C20,8 22,11 22,14 C22,17 19,18 17,16 L15,14 H9 L7,16 C5,18 2,17 2,14 C2,11 4,8 7,8 Z" />
+
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M6.75,9.75 h1.5 v1.5 h1.5 v1.5 h-1.5 v1.5 h-1.5 v-1.5 h-1.5 v-1.5 h1.5 z M16.5,9.5 a1,1 0 1 0 0,2 a1,1 0 1 0 0,-2 z M14.7,11.3 a1,1 0 1 0 0,2 a1,1 0 1 0 0,-2 z" />
+</vector>

@@ -1,6 +1,0 @@
-[submodule "mobileWheel_android"]
-	path = mobileWheel_android
-	url = D:/AndroidProject/mobileWheel_git_backup/mobileWheel_android.git
-[submodule "mobileWheel_win"]
-	path = mobileWheel_win
-	url = D:/AndroidProject/mobileWheel_git_backup/mobileWheel_win.git
